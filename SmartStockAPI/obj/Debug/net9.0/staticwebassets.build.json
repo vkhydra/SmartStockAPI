@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "wIRnKR++KwHgjhh1rFGJXcvJR6Lu51HHttPcbg3tZUA=",
+  "Source": "SmartStockAPI",
+  "BasePath": "_content/SmartStockAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

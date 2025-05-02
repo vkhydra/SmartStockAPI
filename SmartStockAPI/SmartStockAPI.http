@@ -1,0 +1,42 @@
+@SmartStockAPI_HostAddress = http://localhost:5240
+
+#### Get all products
+GET {{baseUrl}}/api/Product
+Content-Type: application/json
+
+### Get a product by ID
+@productId = 123e4567-e89b-12d3-a456-426614174000 # Replace with an existing product ID
+GET {{baseUrl}}/api/Product/{{productId}}
+Content-Type: application/json
+
+### Create a new product
+POST {{baseUrl}}/api/Product
+Content-Type: application/json
+
+{
+  "name": "New Product",
+  "description": "Description of the new product",
+  "costPrice": 10.50,
+  "salePrice": 20.00,
+  "quantityInStock": 100,
+  "registrationDate": "2025-05-02T12:00:00Z"
+}
+
+### Update an existing product
+@productIdToUpdate = 123e4567-e89b-12d3-a456-426614174000 # Replace with an existing product ID
+PUT {{baseUrl}}/api/Product/{{productIdToUpdate}}
+Content-Type: application/json
+
+{
+  "id": "{{productIdToUpdate}}",
+  "name": "Updated Product",
+  "description": "New description of the product",
+  "costPrice": 12.00,
+  "salePrice": 25.00,
+  "quantityInStock": 90,
+  "registrationDate": "2025-05-02T12:05:00Z"
+}
+
+### Delete a product
+@productIdToDelete = 123e4567-e89b-12d3-a456-426614174000 # Replace with an existing product ID
+DELETE {{baseUrl}}/api/Product/{{productIdToDelete}}
