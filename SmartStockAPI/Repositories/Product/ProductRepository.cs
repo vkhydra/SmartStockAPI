@@ -7,7 +7,7 @@ namespace SmartStockAPI.Repositories.Product;
 public class ProductRepository : IProductRepository
 {
     private readonly ApplicationDbContext _context;
-    private readonly ILogger<ProductRepository> _logger; // Adicionamos o logger
+    private readonly ILogger<ProductRepository> _logger;
 
     public ProductRepository(ApplicationDbContext context, ILogger<ProductRepository> logger)
     {
@@ -15,7 +15,7 @@ public class ProductRepository : IProductRepository
         _logger = logger;
     }
 
-    public async Task<ProductModel> CreateProductAsync(ProductModel product)
+    public async Task<ProductModel?> CreateProductAsync(ProductModel product)
     {
         try
         {
@@ -24,15 +24,10 @@ public class ProductRepository : IProductRepository
             _logger.LogInformation($"Product {product.Name} created successfully.");
             return product;
         }
-        catch (DbUpdateException ex)
-        {
-            _logger.LogError(ex, $"Error creating product {product.Name}: {ex.Message}");
-            throw new Exception("Error while creating the product in the database.", ex);   
-        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Unexpected error creating product {product.Name}: {ex.Message}");
-            throw new Exception("An unexpected error occurred while creating the product.", ex);
+            _logger.LogError(ex, $"Error creating product {product.Name}: {ex.Message}");
+            return null;
         }
     }
 
@@ -44,19 +39,14 @@ public class ProductRepository : IProductRepository
             _logger.LogInformation($"Retrieved {products.Count} products.");
             return products;
         }
-        catch (DbUpdateException ex)
+        catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error retrieving products: {ex.Message}");
-            throw new Exception("An error occurred while retrieving the products from database.", ex);
-        }
-        catch (System.Exception)
-        {
-            _logger.LogError("Unexpected error retrieving products.");
-            throw new Exception("An unexpected error occurred while retrieving the products.");
+            _logger.LogError(ex, "Error retrieving products.");
+            return Enumerable.Empty<ProductModel>();
         }
     }
 
-    public async Task<ProductModel> GetProductByIdAsync(Guid id)
+    public async Task<ProductModel?> GetProductByIdAsync(Guid id)
     {
         try
         {
@@ -64,24 +54,19 @@ public class ProductRepository : IProductRepository
             if (product == null)
             {
                 _logger.LogWarning($"Product with ID {id} not found.");
-                throw new KeyNotFoundException($"Product with ID {id} not found.");
+                return null;
             }
             _logger.LogInformation($"Product with ID {id} retrieved successfully.");
             return product;
         }
-        catch (DbUpdateException ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, $"Error retrieving product with ID {id}: {ex.Message}");
-            throw new Exception("An error occurred while retrieving the product from database.", ex);
-        }
-        catch (System.Exception)
-        {
-            _logger.LogError($"Unexpected error retrieving product with ID {id}.");
-            throw new Exception("An unexpected error occurred while retrieving the product.");
+            return null;
         }
     }
 
-    public async Task<ProductModel> UpdateProductAsync(Guid id, UpdateProductDTO product)
+    public async Task<ProductModel?> UpdateProductAsync(Guid id, UpdateProductDTO product)
     {
         try
         {
@@ -89,29 +74,26 @@ public class ProductRepository : IProductRepository
             if (existingProduct == null)
             {
                 _logger.LogWarning($"Product with ID {id} not found.");
-                throw new KeyNotFoundException($"Product with ID {id} not found.");
+                return null;
             }
-            
+
             existingProduct.Name = product.Name;
             existingProduct.Description = product.Description;
             existingProduct.CostPrice = product.CostPrice;
             existingProduct.SalePrice = product.SalePrice;
             existingProduct.QuantityInStock = product.QuantityInStock;
+            existingProduct.LastUpdateDate = DateTime.UtcNow;
+            existingProduct.IsActive = product.IsActive;
 
             _context.Products.Update(existingProduct);
             await _context.SaveChangesAsync();
             _logger.LogInformation($"Product with ID {id} updated successfully.");
             return existingProduct;
         }
-        catch (DbUpdateException ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, $"Error updating product with ID {id}: {ex.Message}");
-            throw new Exception("An error occurred while updating the product in database.", ex);
-        }
-        catch (System.Exception)
-        {
-            _logger.LogError($"Unexpected error updating product with ID {id}.");
-            throw new Exception("An unexpected error occurred while updating the product.");
+            return null;
         }
     }
 
@@ -123,7 +105,7 @@ public class ProductRepository : IProductRepository
             if (product == null)
             {
                 _logger.LogWarning($"Product with ID {id} not found.");
-                throw new KeyNotFoundException($"Product with ID {id} not found.");
+                return false;
             }
 
             _context.Products.Remove(product);
@@ -131,15 +113,34 @@ public class ProductRepository : IProductRepository
             _logger.LogInformation($"Product with ID {id} deleted successfully.");
             return true;
         }
-        catch (DbUpdateException ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, $"Error deleting product with ID {id}: {ex.Message}");
-            throw new Exception("An error occurred while deleting the product from database.", ex);
+            return false;
         }
-        catch (System.Exception)
+    }
+
+    public async Task<IEnumerable<ProductModel>> SearchProductsAsyncByName(string name)
+    {
+        try
         {
-            _logger.LogError($"Unexpected error deleting product with ID {id}.");
-            throw new Exception("An unexpected error occurred while deleting the product.");
+            var products = await _context.Products
+                .Where(p => p.Name.ToLower().Contains(name.ToLower()))
+                .ToListAsync();
+
+            if (products.Count == 0)
+            {
+                _logger.LogWarning($"No products found with name containing '{name}'.");
+                return Enumerable.Empty<ProductModel>();
+            }
+
+            _logger.LogInformation($"Found {products.Count} products with name containing '{name}'.");
+            return products;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error searching products by name '{name}': {ex.Message}");
+            return Enumerable.Empty<ProductModel>();
         }
     }
 }

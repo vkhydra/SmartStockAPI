@@ -33,5 +33,8 @@ public class ProductService : IProductService
     {
         return await _productRepository.DeleteProductAsync(id);
     }
-    
+    public async Task<IEnumerable<ProductModel>> SearchProductsAsyncByName(string name)
+    {
+        return await _productRepository.SearchProductsAsyncByName(name);
+    }    
 }

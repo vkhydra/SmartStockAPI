@@ -134,3 +134,4 @@
 /Users/victorkulessa/Documents/Projects/SmartStock/SmartStockAPI/SmartStockAPI/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerUI.dll
 /Users/victorkulessa/Documents/Projects/SmartStock/SmartStockAPI/SmartStockAPI/bin/Debug/net9.0/DotNetEnv.dll
 /Users/victorkulessa/Documents/Projects/SmartStock/SmartStockAPI/SmartStockAPI/bin/Debug/net9.0/Sprache.dll
+/Users/victorkulessa/Documents/Projects/SmartStock/SmartStockAPI/SmartStockAPI/obj/Debug/net9.0/SmartStockAPI.sourcelink.json
