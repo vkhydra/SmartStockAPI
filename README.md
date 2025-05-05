@@ -81,22 +81,6 @@ A API fornece os seguintes endpoints:
 
 Você pode usar a interface do Swagger para testar os endpoints da API. Para acessar o Swagger, navegue até `https://localhost:<porta>/swagger`.
 
-## DTOs
-
-A API utiliza DTOs para transferir dados entre a API e a camada de serviço. Os DTOs são definidos no namespace `SmartStockAPI.Data.DTOs.Product`.
-
-*   `UpdateProductDTO`: Usado para atualizar um produto existente.
-
-    ```json
-    {
-        "name": "Novo Nome",
-        "description": "Nova Descrição",
-        "costPrice": 10.00,
-        "salePrice": 20.00,
-        "quantityInStock": 100
-    }
-    ```
-
 ## Variáveis de Ambiente
 
 A API utiliza as seguintes variáveis de ambiente:
